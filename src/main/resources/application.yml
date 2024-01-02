@@ -1,0 +1,14 @@
+github:
+  api:
+    base-url: https://api.github.com
+language-weaver:
+  api:
+    base-url: https://api.languageweaver.com
+    username: christopher.c.williams@rtx.com
+    userpassword: Languages@2023
+    token: abc123
+  translation:
+    sourceLanguageId: eng
+    targetLanguageId: ukr
+    model: generic
+    dictionaries: 09eede49-0b77-4c19-8c7c-cb567d85b121
