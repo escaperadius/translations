@@ -14,17 +14,11 @@ import com.example.demo.model.LanguageWeaverApiTokenError;
 import com.example.demo.model.Translation;
 import com.example.demo.service.LanguageWeaverService;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.RequestParam;
-
-@Slf4j
 @RestController
 @RequestMapping("/lang")
 public class LanguageWeaverController {
 
 	private Translation translation;
-//	private LanguageWeaverApiToken apiToken;
 
 	@Autowired
 	private LanguageWeaverService languageWeaverService;
@@ -37,10 +31,7 @@ public class LanguageWeaverController {
 
 	@GetMapping("/translation/{input}")
 	public  ResponseEntity<Translation> getTranslation(@PathVariable String input) {
-		log.error("TP19: {}", input);
 		translation = languageWeaverService.getTranslation(input);
-		log.error("TP20: {}", translation.getRequestId());
-
 		return ResponseEntity.ok(translation);
 	}
 	

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,15 +48,22 @@ public class LanguageWeaverService {
     @Value("${language-weaver.translation.dictionaries}")    
     private String dictionaries;       
 
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(getApiToken().getAccessToken());
+        return headers;
+    }
     public LanguageWeaverApiToken getApiToken() {
 		
-        LanguageWeaverUserCredentials userCredentials = new LanguageWeaverUserCredentials(username, userpassword);
-        log.error("\n\nTP1: {} - {}\n", userCredentials.getUsername(), userCredentials.getPassword());
-        
+        LanguageWeaverUserCredentials userCredentials = new LanguageWeaverUserCredentials(username, 
+                                                                                          userpassword);
         try {
             URI uri = new URI(apiTokenBaseUrl + "/v4/token/user");
-            log.info("LanguageWeaver API Token Rest endpoint:" + apiTokenBaseUrl);
-            RestTemplate restTemplate = new RestTemplate();
+            log.info("LanguageWeaver API Token Rest endpoint:" + uri.toString());
             return restTemplate.postForObject(uri, userCredentials, LanguageWeaverApiToken.class);
         } catch (RuntimeException e) {
             log.error("Fail to fetch Language Weaver Api token ", e);
@@ -69,8 +77,6 @@ public class LanguageWeaverService {
 
     public Translation getTranslation(String input) {
 
-        LanguageWeaverApiToken token = getApiToken();
-
         Translation translation = new Translation();
         translation.setSourceLanguageId(sourceLanguageId);
         translation.setTargetLanguageId(targetLanguageId);
@@ -81,36 +87,23 @@ public class LanguageWeaverService {
         translation.setDictionaries(dic);
         String[] in = {input};
         translation.setInput(in);
-
-        RestTemplate restTemplate = new RestTemplate();
                      
         try {
             URI uri = new URI(apiTokenBaseUrl + "/v4/mt/translations/async");
             log.info("LanguageWeaver translation request endpoint: {}", translation.toString());
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(token.getAccessToken());
-            log.info("\n\nTP5: access token: {}\n", token.getAccessToken());
-            HttpEntity<Translation> entity = new HttpEntity<>(translation, headers);
-            log.info("\n\nTP6: {}\n", entity.getBody());
+            HttpEntity<Translation> entity = new HttpEntity<>(translation, getHttpHeaders());
             
             translation = restTemplate.postForObject(uri, entity, Translation.class);
-            log.info("\n\nTP7: {}\n", translation.toString());
 
             if (!translation.getRequestId().isEmpty()) {
-                log.error("\n\nTP8: {}\n", translation.getRequestId());
                 String url = apiTokenBaseUrl + "/v4/mt/translations/async/" + translation.getRequestId() + "/content";
-              //  URI uri2 = new URI(apiTokenBaseUrl + "/v4/mt/translations/async/" + translation.getRequestId() + "/content");
-                HttpEntity<Void> entity2 = new HttpEntity<>(headers);
-                RestTemplate restTemplate2 = new RestTemplate();
-                log.error("\n\nTP8A: " + url);
+                HttpEntity<Void> entity2 = new HttpEntity<>(getHttpHeaders());
                 
-                TranslationOut out = restTemplate2.exchange(url, HttpMethod.GET, entity2, TranslationOut.class).getBody();
-
-                log.error("\n\nTP9: {} - {}\n", out.getTranslation(), out.getTargetLanguageId());
+                TranslationOut out = restTemplate.exchange(url, HttpMethod.GET, entity2, TranslationOut.class).getBody();
                 translation.setInput(in);
                 translation.setDictionaries(dic);
                 translation.setTranslation(out.getTranslation());
+
                 return translation;
             }
                      
@@ -121,8 +114,6 @@ public class LanguageWeaverService {
             log.error("Invalid URI ERROR: ", e);
             e.printStackTrace();
         }
-
-
         return null;
     }
 

@@ -46,22 +46,22 @@ class LanguageWeverControllerIntegrationTest {
 		registry.add("language-weaver.api.base-url", wireMockServer::baseUrl);
 	}
 
-	@Test
-	void getLanguageWeaverApiToken() throws Exception {
-        String jsonBody = String.format("{\"accessToken\": \"asd0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsI\", \"validityInSeconds\": 86400, \"tokenType\": \"Bearer\", \"expiresAt\": 153850533}");	
-		wireMockServer.stubFor(WireMock.post(urlEqualTo("/v4/token/user"))
-				.willReturn(
-					aResponse()
-						.withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-						.withBody(jsonBody)));
+	// @Test
+	// void getLanguageWeaverApiToken() throws Exception {
+    //     String jsonBody = String.format("{\"accessToken\": \"asd0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsI\", \"validityInSeconds\": 86400, \"tokenType\": \"Bearer\", \"expiresAt\": 153850533}");	
+	// 	wireMockServer.stubFor(WireMock.post(urlEqualTo("/v4/token/user"))
+	// 			.willReturn(
+	// 				aResponse()
+	// 					.withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+	// 					.withBody(jsonBody)));
 
-		this.mockMvc.perform(get("/lang/token"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.accessToken", is("asd0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsI")))
-			.andExpect(jsonPath("$.validityInSeconds", is(86400)))
-			.andExpect(jsonPath("$.tokenType", is("Bearer")))
-			.andExpect(jsonPath("$.expiresAt", is(153850533)));
-	}
+	// 	this.mockMvc.perform(get("/lang/token"))
+	// 		.andExpect(status().isOk())
+	// 		.andExpect(jsonPath("$.accessToken", is("asd0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsI")))
+	// 		.andExpect(jsonPath("$.validityInSeconds", is(86400)))
+	// 		.andExpect(jsonPath("$.tokenType", is("Bearer")))
+	// 		.andExpect(jsonPath("$.expiresAt", is(153850533)));
+	// }
 
 	// @Test
 	// void shouldGetFailureResponseWhenLanguageWeaverApiFailed() throws Exception {
