@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.exceptions.LanguageWeaverServiceException;
-import com.example.demo.model.LanguageWeaverApiToken;
 import com.example.demo.model.LanguageWeaverApiTokenError;
 import com.example.demo.model.Translation;
 import com.example.demo.service.LanguageWeaverService;
@@ -23,20 +22,14 @@ public class LanguageWeaverController {
 	@Autowired
 	private LanguageWeaverService languageWeaverService;
 
-	@GetMapping("/token")
-	public ResponseEntity<LanguageWeaverApiToken> getLanguageWeaverApiToken() {		
-		LanguageWeaverApiToken token = languageWeaverService.getApiToken();
-		return ResponseEntity.ok(token);
-	}
-
 	@GetMapping("/translation/{input}")
-	public  ResponseEntity<Translation> getTranslation(@PathVariable String input) {
+	public ResponseEntity<Translation> getTranslation(@PathVariable String input) {
 		translation = languageWeaverService.getTranslation(input);
 		return ResponseEntity.ok(translation);
 	}
-	
+
 	@ExceptionHandler(LanguageWeaverServiceException.class)
-	ResponseEntity<LanguageWeaverApiTokenError> handle(LanguageWeaverServiceException e){
+	ResponseEntity<LanguageWeaverApiTokenError> handle(LanguageWeaverServiceException e) {
 		LanguageWeaverApiTokenError apiTokenError = new LanguageWeaverApiTokenError(e.getMessage());
 		return ResponseEntity.internalServerError().body(apiTokenError);
 	}

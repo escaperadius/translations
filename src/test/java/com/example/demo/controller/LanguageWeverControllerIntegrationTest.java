@@ -70,7 +70,7 @@ class LanguageWeverControllerIntegrationTest {
 
 	// 	String expectedError = "Fail to fetch Language Weaver Api token for: " + username;
 	// 	this.mockMvc.perform(get("/lang/token}"))
-	// 			.andExpect(status().isInternalServerError())
+	// 			.andExpect(status().isNotFound())
 	// 			.andExpect(jsonPath("$.message", is(expectedError)));
 	// }
 
